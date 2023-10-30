@@ -326,6 +326,7 @@ add_action('plugins_loaded', function() {
 });
 
 
+
 function guildenberg_get_slug() {
 
     $refKeys = get_option('guildenberg_helper_affiliate_refs', 'ref');

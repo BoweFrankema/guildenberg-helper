@@ -9,8 +9,10 @@
 
 class Guildenberg_Helper_Plugin
 {
+     private $host_data;
     public function __construct()
     {
+        $this->host_data = $this->get_normalized_gb_host_by_ref();
         // Hook into WordPress 'init' action to register the custom post type
         add_action('init', [$this, 'create_gb_hosts_cpt']);
 
@@ -188,136 +190,111 @@ class Guildenberg_Helper_Plugin
 
     public function gb_host_name_shortcode($atts)
     {
-        $ref = $this->get_ref();
-        if (!$ref) {
-            return '';
-        }
-
-        $host = $this->get_gb_host_by_ref($ref);
-        if (!$host) {
-            return '';
-        }
-
-        return esc_html($host->post_title);
+        return $this->host_data ? esc_html($this->host_data->name) : '';
     }
 
-    // Shortcode to display GB Host description (content)
     public function gb_host_description_shortcode($atts)
     {
-        $ref = $this->get_ref();
-        if (!$ref) {
-            return '';
-        }
-
-        $host = $this->get_gb_host_by_ref($ref);
-        if (!$host) {
-            return '';
-        }
-
-        return apply_filters('the_content', $host->post_content);
+        return $this->host_data ? apply_filters('the_content', $this->host_data->description) : '';
     }
 
     public function gb_host_slug_shortcode($atts)
     {
-        $ref = $this->get_ref();
-        if (!$ref) {
-            return '';
-        }
-
-        $host = $this->get_gb_host_by_ref($ref);
-        if (!$host) {
-            return '';
-        }
-
-        $slug = $host->post_name;
-        if (!$slug) {
-            return '';
-        }
-
-        return $slug;
-
+        return $this->host_data ? $this->host_data->slug : '';
     }
 
-    // Shortcode to display GB Host logo (featured image)
     public function gb_host_logo_shortcode($atts)
     {
-        $ref = $this->get_ref();
-        if (!$ref) {
-            return '';
+        if ($this->host_data && $this->host_data->thumbnail_id) {
+            return '<img src="'.$this->host_data->thumbnail_id. '"</img>';
         }
-
-        $host = $this->get_gb_host_by_ref($ref);
-        if (!$host) {
-            return '';
-        }
-
-        $thumbnail_id = get_post_thumbnail_id($host->ID);
-        if (!$thumbnail_id) {
-            return '';
-        }
-
-        return wp_get_attachment_image($thumbnail_id, 'full');
+        return '';
     }
-
     public function gb_host_all_shortcode($atts)
     {
-        $ref = $this->get_ref();
-        if (!$ref) {
+        if (!$this->host_data) {
             return '';
         }
 
-        // WP_Query arguments for fetching the relevant 'gb_hosts' post
-        $args = [
-            'name' => $ref,
-            'post_type' => 'gb_hosts',
-            'numberposts' => 1,
-            'post_status' => 'publish',
-        ];
+        // You can use $this->host_data as needed to build the output for this shortcode.
+        // Example: $output = '<div>' . $this->host_data->name . '</div>';
+        // Replace the example with your actual template logic.
 
-        // Run WP_Query
-        $query = new WP_Query($args);
+        return $output; // Return the generated output.
+    }
+    private function get_gb_host_by_ref($ref) {
+        // First, try to load from the theme's folder
+        $theme_config_path = get_stylesheet_directory() . '/config/hosts.php';
 
-        // If no matching 'gb_hosts' post is found, exit the function gracefully
-        if (!$query->have_posts()) {
-            return ''; // Return an empty string
+        if (file_exists($theme_config_path)) {
+            $hosts_config = include $theme_config_path;
+            if (isset($hosts_config[$ref])) {
+                return (object) $hosts_config[$ref];
+            }
         }
 
-        // Start output buffering
-        ob_start();
+        // If not found in the theme, fall back to your plugin's directory
+        $plugin_config_path = plugin_dir_path(__FILE__) . 'config/hosts.php';
 
-        // Locate the template file for rendering the post
-        $template_path = locate_template('gb-host-template.php');
-
-        // Fall back to default template if custom template is not found
-        if (!$template_path) {
-            $template_path = plugin_dir_path(__FILE__) . 'templates/host-information.php';
+        if (file_exists($plugin_config_path)) {
+            $hosts_config = include $plugin_config_path;
+            if (isset($hosts_config[$ref])) {
+                return (object) $hosts_config[$ref];
+            }
         }
 
-        // Loop through the posts and include the template file for each
-        while ($query->have_posts()):
-            $query->the_post();
-            include $template_path;
-        endwhile;
-
-        // Reset post data
-        wp_reset_postdata();
-
-        // Get the buffered content and end output buffering
-        return ob_get_clean();
+        // If still not found, return null
+        return null;
     }
 
-    private function get_gb_host_by_ref($ref)
-    {
-        $args = [
-            'name' => $ref,
-            'post_type' => 'gb_hosts',
-            'numberposts' => 1,
-            'post_status' => 'publish',
-        ];
 
-        $hosts = get_posts($args);
-        return $hosts ? array_shift($hosts) : null;
+  private function get_normalized_gb_host_by_ref()
+{
+    $ref = $this->get_ref();
+    if (!$ref) {
+        return null;
     }
+
+    $host = $this->get_gb_host_by_ref($ref);
+
+    if ($host === null) {
+        return null;
+    }
+
+    $host_data = new stdClass();
+
+    if (is_object($host)) {
+        // Adjusted to use 'logo' instead of 'thumbnail_id'
+        // and use the array key as the slug
+        $host_data->name = $host->name;
+        $host_data->description = $host->custom_intro;
+        $host_data->slug = $ref;  // Array key serves as the slug
+
+        // Check for the logo URL in the plugin directory
+        $plugin_logo_url = plugin_dir_url(__FILE__) . $host->logo;
+        if (file_exists(plugin_dir_path(__FILE__) . $host->logo)) {
+            $host_data->thumbnail_id = $plugin_logo_url;
+        } else {
+            // Logo not found in the plugin directory, check in the active theme's directory
+            $theme_logo_url = get_stylesheet_directory_uri() . $host->logo;
+            if (file_exists(get_stylesheet_directory() . '/' . $host->logo)) {
+                $host_data->thumbnail_id = $theme_logo_url;
+            } else {
+                // If logo is not found in either location, use a default value
+                $host_data->thumbnail_id = ''; // You can set a default URL here if needed
+            }
+        }
+    } else {
+        // Assuming $host is a WP_Post object
+        $host_data->name = $host->post_title;
+        $host_data->description = apply_filters('the_content', $host->post_content);
+        $host_data->slug = $host->post_name;
+        $host_data->thumbnail_id = get_post_thumbnail_id($host->ID);
+    }
+
+    return $host_data;
+}
+
 
     private function get_ref()
     {
@@ -339,7 +316,11 @@ class Guildenberg_Helper_Plugin
 }
 
 // Initialize the plugin
-new Guildenberg_Helper_Plugin();
+add_action('plugins_loaded', function() {
+    // Initialize the plugin
+    new Guildenberg_Helper_Plugin();
+});
+
 
 function guildenberg_get_slug() {
 

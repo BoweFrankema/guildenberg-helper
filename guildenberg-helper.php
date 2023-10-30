@@ -116,23 +116,27 @@ class Guildenberg_Helper_Plugin
         echo '<p class="description">Enter one or multiple parameters you are using to track affiliates, without the "?=" (For example, "ref,aff").
         <br>This would correspond to <br>'. get_site_url(). '/landing/?ref=hosting-company and <br>'. get_site_url(). '/?aff=hosting-company </p>
 
-         <h2>How to automatically show Host information on your landing pages.</h2>
-        <p>You will have a new Post Type called GB Hosts, this is where you add your host info you would like to show.</p>
-        <ul>
-            <li><code>slug</code>This needs to match up with your affiliate parameter. ie if your url is /?ref=kinsta you name the slug "kinsta"</li>
-            <li><code>Post Title</code> ie Kinsta Hosting</li>
-            <li><code>Post Content</code>This is the description for Kinsta</li>
-            <li><code>Featured Image</code> - The logo of Kinsta.</li>
-        </ul>
+        <h2>All of the hosts that are in the campaign already have logos & descriptions.</h2>
+        Here are the links we recommend you to use for your affiliate links:';
+            echo '<ul>';
 
-        <h2>Done? Here\'s how to use the shortcodes:</h2>
+            $hosts_config = include plugin_dir_path(__FILE__) . 'config/hosts.php';
+
+            foreach ($hosts_config as $slug => $host) {
+            echo '<li><strong>' . esc_html($host['name']) . '</strong> ';
+            echo ' - ' . esc_url(get_site_url()) . '/?ref=<strong>' . esc_html($slug) . '</strong></li>';
+            }
+
+            echo '</ul>';
+
+        echo '<h2>Here\'s how to use the shortcodes:</h2>
         <p>Use the following shortcodes anywhere on your landing pages. If there is no match between your Affiliate URL and a host nothing is shown.</p>
         <ul>
             <li><code>[gb-host-name]</code> - Displays the Host name</li>
             <li><code>[gb-host-description]</code> - Displays the Host description</li>
             <li><code>[gb-host-logo]</code> - Displays the GB Host logo</li>
-            <li><code>[gb-host-all]</code> - Displays a simple template you can overwrite with all information. To overwrite in your theme folder create a template called host-information.php. You can now customise the template as needed!</li>
         </ul>
+
 
         <h2>Advanced Usage  - Use <code>guildenberg_get_slug()</code> for display conditions in your Page Builder/code.</h2>
         In some pagebuilders you can conditionally show/hide sections.

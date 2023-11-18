@@ -2,9 +2,11 @@
 /**
  * Plugin Name: Guildenberg Helper Plugin
  * Description: Helps you with setting up your Black Friday sales for Guildenberg. Show host information on your landing pages using shortcodes.
- * Version: 1.0
+ * Version: 1.0.0
  * Author: Bowe Frankema
  * Author URI: https://guildenberg.com
+ * GitHub Plugin URI: https://github.com/BoweFrankema/guildenberg-helper
+ * Primary Branch: main
  */
 
 class Guildenberg_Helper_Plugin
@@ -14,7 +16,6 @@ class Guildenberg_Helper_Plugin
     {
         $this->host_data = $this->get_normalized_gb_host_by_ref();
         // Hook into WordPress 'init' action to register the custom post type
-
 
         // Add settings page for the plugin
         add_action("admin_menu", [$this, "add_plugin_page"]);
@@ -174,8 +175,6 @@ class Guildenberg_Helper_Plugin
         ';
     }
 
-
-
     public function gb_host_name_shortcode($atts)
     {
         return $this->host_data
@@ -300,20 +299,25 @@ class Guildenberg_Helper_Plugin
         return $host_data;
     }
 
-   private function get_ref()
-{
-    $refKey = trim(str_replace(['?', '='], '', get_option("guildenberg_helper_affiliate_refs", "ref")));
+    private function get_ref()
+    {
+        $refKey = trim(
+            str_replace(
+                ["?", "="],
+                "",
+                get_option("guildenberg_helper_affiliate_refs", "ref")
+            )
+        );
 
-    if (isset($_COOKIE[$refKey])) {
-        return $_COOKIE[$refKey];
+        if (isset($_COOKIE[$refKey])) {
+            return $_COOKIE[$refKey];
+        }
+        if (isset($_GET[$refKey])) {
+            return $_GET[$refKey];
+        }
+
+        return null;
     }
-    if (isset($_GET[$refKey])) {
-        return $_GET[$refKey];
-    }
-
-    return null;
-}
-
 }
 
 // Initialize the plugin
@@ -322,9 +326,16 @@ add_action("plugins_loaded", function () {
     new Guildenberg_Helper_Plugin();
 });
 
+
 function guildenberg_get_slug()
 {
-    $refKey = trim(str_replace(['?', '='], '', get_option("guildenberg_helper_affiliate_refs", "ref")));
+    $refKey = trim(
+        str_replace(
+            ["?", "="],
+            "",
+            get_option("guildenberg_helper_affiliate_refs", "ref")
+        )
+    );
 
     if (isset($_COOKIE[$refKey])) {
         return $_COOKIE[$refKey];
@@ -336,3 +347,16 @@ function guildenberg_get_slug()
     return null;
 }
 
+//Plugin Update Checker
+require_once plugin_dir_path(__FILE__) .
+    "plugin-update-checker/plugin-update-checker.php";
+    use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+    // Initialize the update checker
+    $myUpdateChecker = PucFactory::buildUpdateChecker(
+        "https://github.com/BoweFrankema/guildenberg-helper",
+        __FILE__, // This should refer to your main plugin file
+        "guildenberg-helper"
+    );
+
+    // Set the branch that contains the stable release
+    $myUpdateChecker->setBranch("main");

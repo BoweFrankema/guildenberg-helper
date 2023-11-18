@@ -30,6 +30,10 @@ Navigate to `Settings` > `Guildenberg Helper` in your WordPress admin to configu
 2. Click `Save Changes`.
 3. On the settings page you will see a preview of the host information. If you see the default logo and text, you have not yet configured the plugin correctly.
 
+![Alt text](example.png "Optional title")
+
+
+
 ### Overwriting the Configuration with your own affiliate links & logo.
 
 You can overwrite the configuration file by placing a `hosts.php` file in your active theme's directory (`/your-theme/config/hosts.php`). The plugin will first check this directory for the config file before defaulting to the plugin directory.

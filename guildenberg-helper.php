@@ -150,8 +150,10 @@ class Guildenberg_Helper_Plugin
 
         echo '<h2>Default Logo</h2>
         When someone visits your landing page and no affiliate link is found the default logo is shown. You can overwrite this by adding a logo.png file to your theme\'s config folder. <br><br>
-        Current logo<br><br>
-        <img style="display:block; width: 240px; height:auto;" src="'.get_stylesheet_directory_uri().'/config/default.png"</img>
+        Current logo<br>
+        <img style="display:block; width: 240px; height:auto;" src="' .
+            get_stylesheet_directory_uri() .
+            '/config/default.png"</img>
         ';
 
         echo '<h2>Here\'s how to use the shortcodes:</h2>
@@ -300,9 +302,12 @@ class Guildenberg_Helper_Plugin
     public function gb_host_logo_shortcode($atts)
     {
         if ($this->host_data && $this->host_data->thumbnail_id) {
-            return '<img src="' . $this->host_data->thumbnail_id . '"</img>';
+            return '<img src="' . $this->host_data->thumbnail_id . '" />';
         } else {
-            return '<img src="'.include get_stylesheet_directory().'/config/default.png"</img>';
+            // Replace with the correct path to the default image
+            return '<img src="' .
+                get_stylesheet_directory_uri() .
+                '/config/default.png" />';
         }
     }
     public function gb_host_all_shortcode($atts)
@@ -311,12 +316,12 @@ class Guildenberg_Helper_Plugin
             return "";
         }
 
-        // You can use $this->host_data as needed to build the output for this shortcode.
-        // Example: $output = '<div>' . $this->host_data->name . '</div>';
-        // Replace the example with your actual template logic.
+        // Construct the output based on the host data
+        $output = "<div>" . esc_html($this->host_data->name) . "</div>"; // Example, adjust as needed
 
-        return $output; // Return the generated output.
+        return $output;
     }
+
     private function get_gb_host_by_ref($ref)
     {
         // First, try to load from the theme's folder
@@ -351,6 +356,8 @@ class Guildenberg_Helper_Plugin
         }
 
         $host = $this->get_gb_host_by_ref($ref);
+
+        print_r($host);
 
         if ($host === null) {
             return null;
@@ -397,8 +404,10 @@ class Guildenberg_Helper_Plugin
 
     private function get_ref()
     {
-        $refKeys = get_option("guildenberg_helper_affiliate_refs", "ref");
-        $refKeys = explode(",", $refKeys);
+        $refKeys = explode(
+            ",",
+            get_option("guildenberg_helper_affiliate_refs", "?ref=")
+        );
 
         foreach ($refKeys as $key) {
             $key = trim($key);
@@ -422,17 +431,14 @@ add_action("plugins_loaded", function () {
 
 function guildenberg_get_slug()
 {
-    $refKeys = get_option("guildenberg_helper_affiliate_refs", "ref");
-    $refKeys = explode(",", $refKeys);
+    $refKeys = get_option("guildenberg_helper_affiliate_refs", "?ref=");
 
-    foreach ($refKeys as $key) {
-        $key = trim($key);
-        if (isset($_COOKIE[$key])) {
-            return $_COOKIE[$key];
-        }
-        if (isset($_GET[$key])) {
-            return $_GET[$key];
-        }
+    if (isset($_COOKIE[$refKeys])) {
+        return $_COOKIE[$refKeys];
     }
+    if (isset($_GET[$refKeys])) {
+        return $_GET[$refKeys];
+    }
+
     return null;
 }

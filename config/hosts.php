@@ -29,7 +29,7 @@ return [
     'rocketnet' => [
         'name' => 'Rocket.Net',
         'logo' => 'img/hosts/rocketnet.svg',
-        'custom_intro' => 'Welcome RocketNet customer.',
+        'custom_intro' => 'Welcome Rocket.net customer.',
     ],
     'dreamhost' => [
         'name' => 'DreamHost',
@@ -88,7 +88,7 @@ return [
     ],
     'inmotionhosting' => [
         'name' => 'InMotion Hosting',
-        'logo' => 'img/hosts/inmotionhosting.svg',
+        'logo' => 'img/hosts/inmotion.svg',
         'custom_intro' => 'Welcome InMotion Hosting customer.',
     ],
     'wpx' => [

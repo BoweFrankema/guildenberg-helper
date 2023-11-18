@@ -194,7 +194,7 @@ class Guildenberg_Helper_Plugin
 
     public function gb_host_name_shortcode($atts)
     {
-        return $this->host_data ? esc_html($this->host_data->name) : '';
+        return $this->host_data ? esc_html(  'Limited Black Friday deal offered by ' . $this->host_data->name ) : 'Limited Black Friday Deal';
     }
 
     public function gb_host_description_shortcode($atts)
@@ -211,8 +211,9 @@ class Guildenberg_Helper_Plugin
     {
         if ($this->host_data && $this->host_data->thumbnail_id) {
             return '<img src="'.$this->host_data->thumbnail_id. '"</img>';
+        } else {
+            return '<img src="https://getdollie.com/wp-content/uploads/2023/10/control-hq-logo-1.svg"</img>';
         }
-        return '';
     }
     public function gb_host_all_shortcode($atts)
     {

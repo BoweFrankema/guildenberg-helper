@@ -39,13 +39,17 @@ Navigate to `Settings` > `Guildenberg Helper` in your WordPress admin to configu
 You can overwrite the configuration file by placing a `hosts.php` file in your active theme's directory (`/your-theme/config/hosts.php`). The plugin will first check this directory for the config file before defaulting to the plugin directory.
 
 **Copy the Config file to your active Theme Directory**:
-   - Place a `hosts.php` file in your active theme's directory (`/your-theme/config/hosts.php`).
+   - Place a `hosts.php` file in your active theme's directory (`/your-theme/config/hosts.php`). You can copy the file from the plugin directory!
    - The plugin will first check this directory for the config file before defaulting to the plugin directory.
    - Update the default logo to use your own logo.
 
 ### What happens if someone visits my landing page without a affiliate tracking URL?
 
 In this case it will fall back to the default logo and a default text.
+
+### What happens if new hosts are added to Guildenberg?
+
+When this happens we will let you know and you can update your config file with the new host information once you have added your affiliate links.
 
 ### Advanced Usage
 

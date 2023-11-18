@@ -402,25 +402,20 @@ class Guildenberg_Helper_Plugin
         return $host_data;
     }
 
-    private function get_ref()
-    {
-        $refKeys = explode(
-            ",",
-            get_option("guildenberg_helper_affiliate_refs", "?ref=")
-        );
+   private function get_ref()
+{
+    $refKey = trim(str_replace(['?', '='], '', get_option("guildenberg_helper_affiliate_refs", "ref")));
 
-        foreach ($refKeys as $key) {
-            $key = trim($key);
-            if (isset($_COOKIE[$key])) {
-                return $_COOKIE[$key];
-            }
-            if (isset($_GET[$key])) {
-                return $_GET[$key];
-            }
-        }
-
-        return null;
+    if (isset($_COOKIE[$refKey])) {
+        return $_COOKIE[$refKey];
     }
+    if (isset($_GET[$refKey])) {
+        return $_GET[$refKey];
+    }
+
+    return null;
+}
+
 }
 
 // Initialize the plugin
@@ -431,14 +426,15 @@ add_action("plugins_loaded", function () {
 
 function guildenberg_get_slug()
 {
-    $refKeys = get_option("guildenberg_helper_affiliate_refs", "?ref=");
+    $refKey = trim(str_replace(['?', '='], '', get_option("guildenberg_helper_affiliate_refs", "ref")));
 
-    if (isset($_COOKIE[$refKeys])) {
-        return $_COOKIE[$refKeys];
+    if (isset($_COOKIE[$refKey])) {
+        return $_COOKIE[$refKey];
     }
-    if (isset($_GET[$refKeys])) {
-        return $_GET[$refKeys];
+    if (isset($_GET[$refKey])) {
+        return $_GET[$refKey];
     }
 
     return null;
 }
+

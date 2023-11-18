@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Guildenberg Helper Plugin
  * Description: Helps you with setting up your Black Friday sales for Guildenberg. Show host information on your landing pages using shortcodes.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Bowe Frankema
  * Author URI: https://guildenberg.com
  * GitHub Plugin URI: https://github.com/BoweFrankema/guildenberg-helper
@@ -254,7 +254,7 @@ class Guildenberg_Helper_Plugin
 
         $host = $this->get_gb_host_by_ref($ref);
 
-        print_r($host);
+
 
         if ($host === null) {
             return null;

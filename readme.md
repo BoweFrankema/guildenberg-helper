@@ -28,9 +28,9 @@ Navigate to `Settings` > `Guildenberg Helper` in your WordPress admin to configu
 
 1. Enter the affiliate tracking URL parameter in the field provided. For example `?ref=`.
 2. Click `Save Changes`.
-3. Below you will see a preview of your setup and can verify that your affiliate tracking URLs and default logo are correct.
+3. On the settings page you will see a preview of the host information. If you see the default logo and text, you have not yet configured the plugin correctly.
 
-### Overwriting the Configuration
+### Overwriting the Configuration with your own affiliate links & logo.
 
 You can overwrite the configuration file by placing a `hosts.php` file in your active theme's directory (`/your-theme/config/hosts.php`). The plugin will first check this directory for the config file before defaulting to the plugin directory.
 
